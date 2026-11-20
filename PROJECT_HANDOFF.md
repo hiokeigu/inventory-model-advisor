@@ -111,6 +111,10 @@ Future work: independently validate Dataset A preparation and untouched test per
 
 ## Deployment and ownership
 
-Use the exact root structure and steps in README. Repository ownership, teammate permissions, Community Cloud account/terms and repository access must be completed by the responsible account owner. No secrets are required by this demo. Source data redistribution rights should be confirmed before public release. Record verified URLs and maintenance owner in DEPLOYMENT_STATUS.md. See VERIFICATION_REPORT.json for release test outcomes and reference equivalence.
+Live dashboard: https://inventory-model-advisor.streamlit.app/
+
+Repository: https://github.com/hiokeigu/inventory-model-advisor (owner: hiokeigu; deployed branch: main; entrypoint: app.py; Python 3.14).
+
+The repository and Community Cloud deployment are established. The owner approved Streamlit's GitHub connection. No application secrets are required. Add the teammate's GitHub username through repository Settings → Collaborators, then verify their ability to view Cloud logs and maintain deployment. Public read access alone does not grant write access. Follow README for local execution, deployment updates and troubleshooting. Data redistribution rights remain unverified; no dataset license is granted by this repository. See VERIFICATION_REPORT.json for release tests and reference equivalence.
 
 The working local copy has not been overwritten. The portable handoff removes runtime-only debug prints and IPython, uses a compressed five-field projection, bounds the result cache, and migrates deprecated rendering calls to the pinned Streamlit APIs. Forecasting arrays, LP objective/constraints, simulation flow and selection rules are preserved and verified against the original.

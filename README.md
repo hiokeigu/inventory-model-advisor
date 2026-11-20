@@ -2,7 +2,7 @@
 
 Portable DSO 585 Capstone handoff. This is the latest cream-white / sage-green dashboard, with input unit selectors, immediate objective selection, Apply Changes, sortable model comparison, and historical replenishment plans.
 
-**Deployment status:** prepared for deployment; no public app or GitHub repository has been created. `http://127.0.0.1:8501` is local-only. Read [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for remaining actions and [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) before changing methodology.
+**Online dashboard:** [Inventory Model Advisor](https://inventory-model-advisor.streamlit.app/). **Source repository:** [hiokeigu/inventory-model-advisor](https://github.com/hiokeigu/inventory-model-advisor). Deployed from `main`, entrypoint `app.py`, Python 3.14. `http://127.0.0.1:8501` remains local-only. Read [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for ownership details and [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) before changing methodology.
 
 ## Run locally
 
@@ -97,4 +97,4 @@ Work on a branch, run the four checks, review changed results, then merge to the
 
 ## Handoff acceptance
 
-The teammate should run the package from their own machine, verify defaults, own the repository and Cloud access, record URLs, and review the data/license limitations. Public hosting remains an account-dependent final step, not a completed deliverable.
+The teammate should run the package locally, verify defaults, obtain repository write access from hiokeigu, and review the data/license limitations. The app is deployed; future updates to the deployed main branch propagate through Community Cloud. Repository visibility does not grant the teammate write access: add their GitHub username through Settings → Collaborators, and verify their Cloud maintenance access separately.

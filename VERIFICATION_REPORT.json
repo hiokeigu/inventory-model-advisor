@@ -1,8 +1,27 @@
 {
   "date": "2026-11-19",
   "python": "3.14.6",
-  "published": false,
-  "repository_created": false,
+  "published": true,
+  "repository_created": true,
+  "deployment": {
+    "url": "https://inventory-model-advisor.streamlit.app/",
+    "repository": "https://github.com/hiokeigu/inventory-model-advisor",
+    "branch": "main",
+    "python": "3.14",
+    "visibility": "Public and searchable, confirmed in Community Cloud settings",
+    "hosted_checks": [
+      "Default KPIs match reference",
+      "Service objective switches to four-week baseline",
+      "Balanced shows both efficient candidates",
+      "Inspected candidate updates KPIs and plan model",
+      "Draft operating edits preserve results",
+      "Apply 35% holding produces expected updated KPIs"
+    ],
+    "direct_view": "https://inventory-model-advisor.streamlit.app/~/+/",
+    "hosted_replenishment_check": "April 10 Poisson plan CSV downloaded; exact order quantities and costs matched local LP outputs; budget assertion passed.",
+    "hosted_sorting_check": "Ascending cost header sorting on hosted app retained Poisson highlight.",
+    "note": "Canonical short URL confirmed in Cloud settings; public/searchable visibility confirmed. Cloud wrapper intermittently stayed on its loader in separate Chrome verification; direct app view loaded and worked."
+  },
   "checks": [
     {
       "name": "verify_package.py",
