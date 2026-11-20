@@ -36,6 +36,10 @@ assert selected.map(len).eq(1).all(), 'Each model must have one selected trainin
 
 weeks=pd.date_range(WARMUP,END,freq='W-MON')
 products=np.array(sorted(raw.loc[raw.forecast_week<=END,'product_id'].unique()))
+# Names are display metadata. Eligibility, joins, and optimization remain keyed by SKU.
+product_names = (raw.groupby('product_id')['product_name'].first().reindex(products)
+                 if 'product_name' in raw else pd.Series(index=products, dtype=str))
+PRODUCT_NAMES = product_names.fillna('Name unavailable').to_numpy()
 def matrix(frame,col):
     return frame.pivot(index='forecast_week',columns='product_id',values=col).reindex(index=weeks,columns=products).to_numpy(float)
 ACTUAL=matrix(raw,'actual_order_qty')
@@ -159,31 +163,42 @@ def simulate(F, carrying_rate, penalty_fraction, initial_mult=1., lead=1, budget
         starting_inventory=on_hand.copy() if decision_log is not None else None
         weekly_budget=budget_mult*float(RUN_RATE[t,idx]@COST[idx]) if budget_per_week is None else budget_per_week
         order_allowed=t+lead<=sim_weeks[-1] and len(idx)>0
-        if t+lead<=sim_weeks[-1] and len(idx):
+        if order_allowed:
             f=F[t,idx]
-            base=np.maximum(on_hand[idx]+arrivals[t+1:t+lead+1,idx].sum(axis=0)-lead*f,0)
+            inbound=arrivals[t+1:t+lead+1,idx].sum(axis=0)
+            base=np.maximum(on_hand[idx]+inbound-lead*f,0)
             z=residual_quantiles(F,t,lead,N_SCENARIOS)
             scen=f[:,None] if z is None else np.maximum(f[:,None]+z[None,:]*np.sqrt(np.maximum(f,1))[:,None],0)
-            budget=budget_mult*float(RUN_RATE[t,idx]@COST[idx]) if budget_per_week is None else budget_per_week
-            q=solve_order_lp(base,scen,h[idx],penalty[idx],COST[idx],budget)
-            assert q@COST[idx]<=budget+1e-5
+            q=solve_order_lp(base,scen,h[idx],penalty[idx],COST[idx],weekly_budget)
+            assert q@COST[idx]<=weekly_budget+1e-5
             q_all[idx]=q; spend+=q@COST[idx]
             if lead==0:
                 on_hand+=q_all; received+=q_all.sum()
             else:
                 arrivals[t+lead]+=q_all
         orders.append(q_all)
-        if decision_log is not None:
-            assert float(q_all@COST)<=weekly_budget+1e-5
-            for i in idx:
-                decision_log.append(dict(Week=week,SKU=products[i],
-                    Starting_Inventory=float(starting_inventory[i]),Forecast_Demand=float(F[t,i]),
-                    Recommended_Order_Quantity=float(q_all[i]),Unit_Purchase_Cost=float(COST[i]),
-                    Estimated_Purchase_Cost=float(q_all[i]*COST[i]),
-                    Weekly_Purchasing_Budget=float(weekly_budget),Order_Allowed=bool(order_allowed)))
         dem=np.nan_to_num(ACTUAL[t])
         sold=np.minimum(on_hand,dem); on_hand-=sold
         shortage=dem-sold
+        if decision_log is not None:
+            assert float(q_all@COST)<=weekly_budget+1e-5
+            arrival_week=week+pd.Timedelta(weeks=int(lead))
+            for j,i in enumerate(idx):
+                decision_log.append(dict(Week=week,SKU=products[i],Product_Name=PRODUCT_NAMES[i],
+                    Starting_Inventory=float(starting_inventory[i]),Forecast_Demand=float(F[t,i]),
+                    Arrival_Week=arrival_week,
+                    Scheduled_Inbound_Units=float(inbound[j]) if order_allowed else np.nan,
+                    Forecast_Use_Before_Arrival=float(lead*F[t,i]) if order_allowed else np.nan,
+                    Projected_Stock_Before_New_Order=float(base[j]) if order_allowed else np.nan,
+                    Arrival_Scenario_Min=float(scen[j].min()) if order_allowed else np.nan,
+                    Arrival_Scenario_Max=float(scen[j].max()) if order_allowed else np.nan,
+                    Recommended_Order_Quantity=float(q_all[i]),Unit_Purchase_Cost=float(COST[i]),
+                    Estimated_Purchase_Cost=float(q_all[i]*COST[i]),
+                    Weekly_Purchasing_Budget=float(weekly_budget),Order_Allowed=bool(order_allowed),
+                    # These describe Week, after the decision. Missing recorded orders stay unknown.
+                    Recorded_Order_Units=ACTUAL[t,i],
+                    Simulated_Fulfilled_Units=float(sold[i]) if ACTIVE[t,i] else np.nan,
+                    Simulated_Unmet_Units=float(shortage[i]) if ACTIVE[t,i] else np.nan))
         demand+=dem.sum(); unmet+=shortage.sum(); sold_total+=sold.sum()
         lost_cost+=float(shortage@penalty); holding+=float(on_hand@h)
         inventory_ends.append(on_hand.sum())

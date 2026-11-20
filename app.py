@@ -3,6 +3,8 @@ import hashlib
 import importlib.util
 from pathlib import Path
 import streamlit as st
+from comparison_table import render_comparison
+from plan_views import comparison_summary, render_plan_comparison, render_weekly_plan
 
 st.set_page_config(page_title='Inventory Model Advisor', page_icon='◌', layout='wide', menu_items={'Get Help':None,'Report a bug':None,'About':None})
 st.markdown('''<style>
@@ -95,7 +97,8 @@ with inputs_column, st.container(key='business_inputs'):
     draft_parameters=(carry,penalty,initial,lead,budget,holding_fixed,penalty_fixed,budget_fixed)
 
 with results_column:
-    kpi_cards=st.container()
+    st.subheader('26-week performance')
+    st.caption('DataCo historical simulation · Apr 3 – Sep 25, 2017')
     try:
         applied=st.session_state.get('applied_simulation',{})
         if (not applied or 'plans' not in applied or applied.get('revision')!=ENGINE_REVISION or
@@ -103,7 +106,8 @@ with results_column:
             with st.spinner('Simulating seven methods with weekly LP optimization…'):
                 computed,plans=calculate(draft_parameters,ENGINE_REVISION)
             st.session_state.applied_simulation={'result':computed,'plans':plans,'parameters':draft_parameters,'revision':ENGINE_REVISION}
-        result=st.session_state.applied_simulation['result']
+        applied=st.session_state.applied_simulation
+        result=applied['result']
         engine=backend()
     except Exception as exc:
         st.error(f'Simulation unavailable: {exc}')
@@ -129,44 +133,23 @@ with results_column:
         row=candidates.loc[candidates.Model==chosen].iloc[0]
     else:
         row=candidates.iloc[0]
-    with kpi_cards:
-        a,b,c=st.columns(3)
-        a.metric('Estimated Total Operating Cost',f'${row.Total_Simulated_Cost:,.2f}')
-        b.metric('Fill Rate',f'{row.Fill_Rate:.2%}')
-        c.metric('Ending Inventory Value',f'${row.Final_Inventory_Value:,.2f}')
-    st.markdown('### Model Comparison')
-    table=result[['Model','Total_Simulated_Cost','Fill_Rate','Final_Inventory_Value','Pareto']].rename(columns={'Total_Simulated_Cost':'Total Operating Cost','Fill_Rate':'Fill Rate','Final_Inventory_Value':'Ending Inventory Value','Pareto':'Pareto efficient'})
-    from comparison_table import render_comparison
-    render_comparison(table, candidates.Model.tolist())
-    st.caption('DataCo recorded demand · 26 evaluation weeks · Apr 3–Sep 25, 2017 · Live LP simulation')
-    st.download_button('Download current comparison',result.to_csv(index=False),'inventory_comparison.csv','text/csv')
-    st.markdown('### Replenishment Plan')
-    st.caption('Historical simulated DataCo replenishment decisions — not live purchase recommendations or today’s inventory.')
-    plans=st.session_state.applied_simulation['plans']
-    model_plans=plans.loc[plans.Model.eq(row.Model)]
-    plan_weeks=sorted(model_plans.Week.unique())
-    selected_week=st.selectbox('Simulation week',plan_weeks,index=len(plan_weeks)-1,
-        format_func=lambda value:engine.pd.Timestamp(value).strftime('%b %d, %Y'),key='plan_week')
-    plan=model_plans.loc[model_plans.Week.eq(selected_week)].copy()
-    units=float(plan.Recommended_Order_Quantity.sum())
-    purchase_cost=float(plan.Estimated_Purchase_Cost.sum())
-    week_budget=float(plan.Weekly_Purchasing_Budget.iloc[0])
-    assert purchase_cost<=week_budget+1e-5
-    st.caption(f'Model: {row.Model} · Weekly purchasing budget: ${week_budget:,.2f}')
-    if not plan.Order_Allowed.any():
-        st.caption('No replenishment order: arrival would fall beyond the evaluation horizon.')
-    u,v=st.columns(2)
-    u.metric('Total Replenishment Units',f'{units:,.2f}')
-    v.metric('Estimated Purchase Cost',f'${purchase_cost:,.2f}')
-    st.caption('Starting inventory is simulated on-hand stock after scheduled receipts and before this week’s order and demand. Forecast Demand is the model forecast used by the policy; the LP also uses its historical error buffer. Eligible SKUs include zero-order rows; quantities are continuous.')
-    plan_table=plan[['SKU','Starting_Inventory','Forecast_Demand','Recommended_Order_Quantity','Estimated_Purchase_Cost']].rename(columns={
-        'Starting_Inventory':'Starting Inventory','Forecast_Demand':'Forecast Demand',
-        'Recommended_Order_Quantity':'Recommended Order Quantity','Estimated_Purchase_Cost':'Estimated Purchase Cost'})
-    st.dataframe(plan_table.style.format({'Starting Inventory':'{:,.2f}','Forecast Demand':'{:,.2f}',
-        'Recommended Order Quantity':'{:,.2f}','Estimated Purchase Cost':'${:,.2f}'}),hide_index=True,width='stretch')
-    export=plan.assign(Context='Historical DataCo simulation; not live purchasing advice')
-    st.download_button('Download replenishment plan CSV',export.to_csv(index=False),
-        f'replenishment_{engine.pd.Timestamp(selected_week):%Y-%m-%d}_{row.Model.replace(" ","_")}.csv','text/csv')
+    a,b,c=st.columns(3)
+    a.metric('Estimated Total Operating Cost',f'${row.Total_Simulated_Cost:,.2f}')
+    b.metric('Fill Rate',f'{row.Fill_Rate:.2%}')
+    c.metric('Ending Inventory Value',f'${row.Final_Inventory_Value:,.2f}')
+    st.markdown('**Poisson vs. four-week average**')
+    st.write(comparison_summary(result, engine.BASELINE))
+    weekly, compare, models = st.tabs(['Weekly replenishment', 'Compare plans A / B', 'Model comparison'], key='decision_views')
+    with weekly:
+        model_plans = applied['plans'].loc[applied['plans'].Model.eq(row.Model)]
+        render_weekly_plan(model_plans, row.Model, applied['parameters'])
+    with compare:
+        render_plan_comparison(applied)
+    with models:
+        st.subheader('Model comparison over 26 weeks')
+        table=result[['Model','Total_Simulated_Cost','Fill_Rate','Final_Inventory_Value','Pareto']].rename(columns={'Total_Simulated_Cost':'Total Operating Cost','Fill_Rate':'Fill Rate','Final_Inventory_Value':'Ending Inventory Value','Pareto':'Pareto efficient'})
+        render_comparison(table, candidates.Model.tolist())
+        st.download_button('Download current comparison',result.to_csv(index=False),'inventory_comparison.csv','text/csv')
     with st.expander('Model Notes & Assumptions'):
         st.table({
             'Area':['Forecasting models','Forecasting uncertainty','Optimization','Cost calculation','Inventory treatment','Lead time','Dataset'],
