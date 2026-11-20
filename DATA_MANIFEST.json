@@ -1,0 +1,39 @@
+{
+  "source_notebook": "https://colab.research.google.com/drive/11l4MoVEO3ISTK1oTFFPnQTCF_EtvD9HN",
+  "notebook_read_revision_utc": "2026-11-18T02:14:26.812Z",
+  "source": "Existing local DataCo CSVs; upstream Dataset A filtering and raw-file redistribution license unverified.",
+  "raw_projection": {
+    "rows": 180519,
+    "columns": [
+      "Product Card Id",
+      "order date (DateOrders)",
+      "Order Item Product Price",
+      "Order Item Quantity",
+      "Sales"
+    ],
+    "original_sha256": "fa6d022ed437155e1a2f0378710602848703c8a7f203f7ff5d77805bf8480aa6",
+    "roundtrip": "All selected columns and rows match after CSV/gzip roundtrip."
+  },
+  "files": {
+    "dataco_order_fields.csv.gz": {
+      "sha256": "b3b52148172828c279e3cc577b7b24652f461c14852c1ff2ac7df7495032c11b",
+      "bytes": 975801
+    },
+    "demand_dataset_A.csv": {
+      "sha256": "0653bea5519690dddbd702e7333bc180b2bb499169fb2f2391f1a2bc9705cb70",
+      "bytes": 439571
+    },
+    "selected_six_model_predictions.csv": {
+      "sha256": "1a5ecd23b5e7786aff908fc89471c781242cbcd04c89e3beb2e7f00c2d379705",
+      "bytes": 1049625
+    }
+  },
+  "original_source_files": {
+    "app.py": "0b7439b4e4dd1eff84892977e011c8739a2389dc0286e92c06e78a4c232cc1e1",
+    "comparison_table.py": "0ccfe105c0a259a4cf9c75c1d8889450276d7f00d710be8a54ac0f3e9627383c",
+    "engine.py": "78b039b796186aabbb3b9b0a30f38a615c1fa477b188b5b392ef0f728dfb9d9c",
+    "verify.py": "1159dcbe5e672f6963f461ba98dca12ccae1e45b4e38d0f1c42ad96b01fe0cda",
+    "verify_replenishment.py": "7e1df45416952a8cfbe5c6217408e0ca04194ac620fdf75bee4211489b0f1b29",
+    "verify_ui.py": "82d06194f8e52e83d3b89fcfedf7ee5d1592fbf5d74983c14446add4c2b3ce7b"
+  }
+}

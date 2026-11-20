@@ -1,0 +1,161 @@
+{
+  "date": "2026-11-19",
+  "python": "3.14.6",
+  "published": false,
+  "repository_created": false,
+  "checks": [
+    {
+      "name": "verify_package.py",
+      "status": "PASS",
+      "seconds": 0.4
+    },
+    {
+      "name": "verify.py",
+      "status": "PASS",
+      "seconds": 20.52
+    },
+    {
+      "name": "verify_ui.py",
+      "status": "PASS",
+      "seconds": 16.03
+    },
+    {
+      "name": "verify_replenishment.py",
+      "status": "PASS",
+      "seconds": 15.63
+    },
+    {
+      "name": "Original vs portable arrays, forecasts and all seven default result rows",
+      "status": "PASS",
+      "seconds": 4.13
+    },
+    {
+      "name": "Original Python sources remain unchanged",
+      "status": "PASS",
+      "seconds": 0.0
+    },
+    {
+      "name": "Fresh four-dependency environment, pip check, no IPython",
+      "status": "PASS"
+    },
+    {
+      "name": "Server launched from a separate working directory on port 8502",
+      "status": "PASS"
+    },
+    {
+      "name": "Browser ascending/descending numeric sorting; highlight remains attached to Poisson row",
+      "status": "PASS"
+    },
+    {
+      "name": "ZIP integrity; unpacked data manifest; unpacked app renders without original project files",
+      "status": "PASS"
+    }
+  ],
+  "default_results": [
+    {
+      "Model": "4-Week Moving Average Baseline",
+      "Total_Simulated_Cost": 20018.719574192364,
+      "Fill_Rate": 0.9905063427761281,
+      "Unmet_Demand_Units": 569.2301934861355,
+      "Average_Ending_Inventory": 2973.6895869789473,
+      "Holding_Cost": 11139.152555499164,
+      "Lost_Sales_Penalty": 8879.5670186932,
+      "Final_Inventory_Units": 3793.1313154801096,
+      "Final_Inventory_Value": 200963.03256848126,
+      "Pareto": true
+    },
+    {
+      "Model": "XGBoost",
+      "Total_Simulated_Cost": 20222.601640860186,
+      "Fill_Rate": 0.9866668342118277,
+      "Unmet_Demand_Units": 799.4432874930251,
+      "Average_Ending_Inventory": 1948.2881117918926,
+      "Holding_Cost": 7033.871173341294,
+      "Lost_Sales_Penalty": 13188.730467518893,
+      "Final_Inventory_Units": 2523.110772973037,
+      "Final_Inventory_Value": 133102.10261505225,
+      "Pareto": false
+    },
+    {
+      "Model": "LightGBM",
+      "Total_Simulated_Cost": 21072.75955592167,
+      "Fill_Rate": 0.9849868965348388,
+      "Unmet_Demand_Units": 900.1706706675961,
+      "Average_Ending_Inventory": 1922.7923751648252,
+      "Holding_Cost": 6925.127835585194,
+      "Lost_Sales_Penalty": 14147.631720336476,
+      "Final_Inventory_Units": 2509.46022566832,
+      "Final_Inventory_Value": 130429.23642741307,
+      "Pareto": false
+    },
+    {
+      "Model": "Ridge",
+      "Total_Simulated_Cost": 18336.673817151663,
+      "Fill_Rate": 0.9895575545811534,
+      "Unmet_Demand_Units": 626.1185848686243,
+      "Average_Ending_Inventory": 2475.111597597553,
+      "Holding_Cost": 8973.773970300981,
+      "Lost_Sales_Penalty": 9362.899846850682,
+      "Final_Inventory_Units": 3144.9745344036883,
+      "Final_Inventory_Value": 162991.87887606304,
+      "Pareto": false
+    },
+    {
+      "Model": "Lasso",
+      "Total_Simulated_Cost": 18349.201559258465,
+      "Fill_Rate": 0.9900402695940387,
+      "Unmet_Demand_Units": 597.1754754110351,
+      "Average_Ending_Inventory": 2542.656925102087,
+      "Holding_Cost": 9219.538881949486,
+      "Lost_Sales_Penalty": 9129.662677308977,
+      "Final_Inventory_Units": 3227.3764513037677,
+      "Final_Inventory_Value": 165846.39640731283,
+      "Pareto": false
+    },
+    {
+      "Model": "Linear Regression",
+      "Total_Simulated_Cost": 18354.042074261313,
+      "Fill_Rate": 0.9901656536707533,
+      "Unmet_Demand_Units": 589.6575715553062,
+      "Average_Ending_Inventory": 2566.855185726131,
+      "Holding_Cost": 9289.65227945563,
+      "Lost_Sales_Penalty": 9064.389794805684,
+      "Final_Inventory_Units": 3255.077455295711,
+      "Final_Inventory_Value": 165969.50986054694,
+      "Pareto": false
+    },
+    {
+      "Model": "Poisson Regression",
+      "Total_Simulated_Cost": 17734.610385354423,
+      "Fill_Rate": 0.9902433887601886,
+      "Unmet_Demand_Units": 584.9966533278531,
+      "Average_Ending_Inventory": 2413.9755380409124,
+      "Holding_Cost": 8616.958181420541,
+      "Lost_Sales_Penalty": 9117.652203933882,
+      "Final_Inventory_Units": 2929.9841050607365,
+      "Final_Inventory_Value": 145873.50986194646,
+      "Pareto": true
+    }
+  ],
+  "selected_windows": {
+    "Lasso": [
+      "Rolling 12"
+    ],
+    "LightGBM": [
+      "Rolling 104"
+    ],
+    "Linear Regression": [
+      "Rolling 12"
+    ],
+    "Poisson Regression": [
+      "Rolling 26"
+    ],
+    "Ridge": [
+      "Rolling 12"
+    ],
+    "XGBoost": [
+      "Rolling 104"
+    ]
+  },
+  "data_projection": "Five-field raw projection roundtrip equality validated during build; all 180519 rows preserved."
+}
