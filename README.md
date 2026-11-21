@@ -1,6 +1,10 @@
 # Inventory Model Advisor
 
-Portable DSO 585 Capstone handoff. This is the latest cream-white / sage-green dashboard, with input unit selectors, immediate objective selection, Apply Changes, sortable model comparison, and historical replenishment plans.
+For a side-by-side comparison of the original dashboard and the weekly planning update, see the [version history](CHANGELOG.md).
+
+The DSO 585 dashboard replays 26 weeks of DataCo replenishment decisions. The top of the page shows overall performance and a Poisson versus four-week average summary. Under **Weekly replenishment**, select a SKU to inspect its order and the recorded and simulated outcomes for its arrival week. The table and CSV include both the SKU and product name.
+
+Under **Compare plans A / B**, save the current applied settings as Plan A, edit a business input and click **Apply Changes** for Plan B. Both use Poisson forecasts. The first table compares 26-week results. The selected-week tables show the purchasing budget, order totals and per-SKU changes for that week. Plan A lasts for the current browser session.
 
 **Online dashboard:** [Inventory Model Advisor](https://inventory-model-advisor.streamlit.app/). **Source repository:** [hiokeigu/inventory-model-advisor](https://github.com/hiokeigu/inventory-model-advisor). Deployed from `main`, entrypoint `app.py`, Python 3.14. `http://127.0.0.1:8501` remains local-only. Read [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for ownership details and [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md) before changing methodology.
 
@@ -25,6 +29,7 @@ No Colab runtime, Google Drive mount, account credentials, model retraining, or 
 app.py                         UI, unit controls, cached results, objective selection
 engine.py                      Data validation, forecasts, LP and simulation
 comparison_table.py            Client-side header sorting and model highlighting
+plan_views.py                  Weekly SKU details and Poisson plan comparisons
 data/
   demand_dataset_A.csv         Recorded SKU-week demand
   selected_six_model_predictions.csv  Fixed forecasts and selected windows
@@ -92,7 +97,7 @@ Work on a branch, run the four checks, review changed results, then merge to the
 | `evaluate()` argument mismatch | Deploy app.py and engine.py from the same release; reboot the service. The versioned backend loader avoids stale imported modules and passes named options. |
 | Assertions or LP failure | Check data schema, prediction coverage, nonnegative inputs, units and LP error message. Keep validation enabled; never replace failed results with example numbers. |
 | Input edit does not change KPIs | Click Apply Changes. Objective changes intentionally reuse the most recently applied operating assumptions. |
-| Latest plan has zero orders | Expected: lead-time arrivals would exceed the September 25, 2017 horizon. Select an earlier week. |
+| A selected week is closed to orders | Orders must arrive by September 25, 2017. The weekly view opens on the latest eligible order week for the applied lead time. Later weeks remain available for review. |
 | Cloud app slow or resource-limited | Inspect logs, reduce concurrent heavy evaluations or choose suitable hosting. Results cache is bounded to 32 parameter combinations per process. |
 
 ## Handoff acceptance
